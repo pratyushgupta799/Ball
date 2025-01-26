@@ -2,28 +2,32 @@ using UnityEngine;
 
 public class Paddle : MonoBehaviour
 {
-    Rigidbody2D rb;
-    public float moveSpeed;
+    private Rigidbody2D _rb; 
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float mouseMoveSpeed = 500f;
+    private Transform _paddleTransform;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+        _rb = GetComponent<Rigidbody2D>();
+        _paddleTransform = GetComponent<Transform>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetAxis("Mouse X") > 0 && _paddleTransform.position.x < 7.2f)
+        {
+            _paddleTransform.Translate(Input.GetAxis("Mouse X") * mouseMoveSpeed, 0, 0);
+        }
+
+        if (Input.GetAxis("Mouse X") < 0 && _paddleTransform.position.x > -7.2f)
+        {
+            _paddleTransform.Translate(Input.GetAxis("Mouse X") * mouseMoveSpeed, 0, 0);
+        }
     }
 
     private void FixedUpdate()
     {
-        //TouchMove();
         KeyboardMove();
     }
 
@@ -34,31 +38,31 @@ public class Paddle : MonoBehaviour
             Vector2 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (touchPos.x < 0)
             {
-                rb.linearVelocity = Vector2.left * moveSpeed;
+                _rb.linearVelocity = Vector2.left * moveSpeed;
             }
             if (touchPos.x > 0)
             {
-                rb.linearVelocity = Vector2.right * moveSpeed;
+                _rb.linearVelocity = Vector2.right * moveSpeed;
             }
         }
         else
         {
-            rb.linearVelocity = Vector2.zero;
+            _rb.linearVelocity = Vector2.zero;
         }
     }
     void KeyboardMove()
     {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            rb.linearVelocity = Vector2.left * moveSpeed;
+            _rb.linearVelocity = Vector2.left * moveSpeed;
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            rb.linearVelocity = Vector2.right * moveSpeed;
+            _rb.linearVelocity = Vector2.right * moveSpeed;
         }
         else
         {
-            rb.linearVelocity = Vector2.zero; // Stop movement when no key is pressed
+            _rb.linearVelocity = Vector2.zero; // Stop movement when no key is pressed
         }
     }
 }

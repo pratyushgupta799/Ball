@@ -1,35 +1,25 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
-    int score = 0;
+    public static GameManager Instance;
+    private int _score = 0;
     public TMP_Text scoreText;
     public GameObject gameStartUI;
+    public GameObject paddle;
 
     private void Awake()
     {
-        instance = this;
+        Instance = this;
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void GameStart()
     {
         gameStartUI.SetActive(false);
         scoreText.gameObject.SetActive(true);
+        paddle.gameObject.SetActive(true);
+        
     }
 
     public void Restart()
@@ -39,7 +29,7 @@ public class GameManager : MonoBehaviour
 
     public void ScoreUp()
     {
-        score++;
-        scoreText.text = score.ToString();
+        _score++;
+        scoreText.text = _score.ToString();
     }
 }

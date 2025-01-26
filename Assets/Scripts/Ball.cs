@@ -2,50 +2,65 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    Rigidbody2D rb;
-    public float bounceForce;
-    bool GameStarted = false;
+    private Rigidbody2D _rb;
+    [SerializeField]private float speedIncreaseRate;
+    [SerializeField]private float maxSpeed;
+    [SerializeField]private float bounceForce;
+    private bool _gameStarted = false;
+    public GameObject paddle;
+    private Vector3 _paddleCenter;
 
     private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
+    { 
+        _rb = GetComponent<Rigidbody2D>();
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start()
     {
         
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
-        if (Input.anyKeyDown && !GameStarted)
+        if (Input.anyKeyDown && !_gameStarted)
         {
-            GameManager.instance.GameStart();
+            GameManager.Instance.GameStart();
             StartBounce();
         }
 
+        if (_gameStarted)
+        {
+            float newSpeed = speedIncreaseRate * Time.time + 8f;
+            float finalSpeed = Mathf.Min(newSpeed, maxSpeed);
+
+            _rb.linearVelocity = _rb.linearVelocity.normalized * finalSpeed;
+        }
     }
 
     void StartBounce()
     {
-        Vector2 RandomDirection = new Vector2(0.5f, 1);
+        Vector2 RandomDirection = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
 
-        rb.AddForce(RandomDirection * bounceForce, ForceMode2D.Impulse);
+        _rb.AddForce(RandomDirection * bounceForce, ForceMode2D.Impulse);
 
-        GameStarted = true;
+        _gameStarted = true;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "FallCheck")
+        if(collision.gameObject.CompareTag("FallCheck"))
         {
-            GameManager.instance.Restart();
+            GameManager.Instance.Restart();
         }
 
-        else if(collision.gameObject.tag == "Paddle")
+        else if(collision.gameObject.CompareTag("Paddle"))
         {
-            GameManager.instance.ScoreUp();
+            _paddleCenter = paddle.GetComponent<Collider2D>().bounds.center;
+            Vector2 impactPoint = transform.position;
+            float impactFactor = (impactPoint.x - _paddleCenter.x);
+            
+            _rb.AddForce(new Vector2(impactFactor * 10f, 0), ForceMode2D.Impulse);
+            GameManager.Instance.ScoreUp();
         }
     }
 }
